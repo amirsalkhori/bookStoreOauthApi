@@ -1,15 +1,7 @@
 package main
 
-import (
-	"fmt"
-	"time"
-)
+import "bookStoreOauthApi/src/app"
 
 func main() {
-	fmt.Println(time.Unix(2, 2))
-	fmt.Println(time.Now())
-	fmt.Println(time.Now().UTC())
-	fmt.Println(time.Now().UTC().Add(24 * time.Hour))
-	fmt.Println(time.Now().UTC().Add(24 * time.Hour).Unix())
-
+	app.StartApplication()
 }
