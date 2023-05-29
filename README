@@ -1,0 +1,5 @@
+CREATE KEYSPACE oauth WITH replication = {'class': 'SimpleStrategy', 'replication_factor': 1};
+USE oauth;
+CREATE TABLE access_token ( access_token VARCHAR PRIMARY KEY,  user_id BIGINT,  client_id BIGINT,  expires BIGINT);
+SELECT * FROM access_token;
+https://github.com/gocql/gocql
