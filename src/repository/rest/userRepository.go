@@ -4,6 +4,7 @@ import (
 	"bookStoreOauthApi/src/domain/users"
 	"bookStoreOauthApi/src/errors"
 	"encoding/json"
+	"fmt"
 	"time"
 
 	"github.com/mercadolibre/golang-restclient/rest"
@@ -28,6 +29,8 @@ func (r *userRepository) LoginUser(email string, password string) (*users.User, 
 		Password: password,
 	}
 	response := userRestClient.Post("/users/login", request)
+
+	fmt.Println("Response:", response.Response)
 	if response == nil || response.Response == nil {
 		return nil, errors.NewInternamlServerError("Invalid restClient response when trying to login user!")
 	}

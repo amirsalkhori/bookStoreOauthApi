@@ -2,6 +2,7 @@ package cassandra
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gocql/gocql"
 )
@@ -12,6 +13,7 @@ var (
 
 func init() {
 	cluster := gocql.NewCluster("127.0.0.1")
+	cluster.Timeout = 2 * time.Second // Set the timeout to 2 seconds
 	cluster.Keyspace = "oauth"
 	cluster.Consistency = gocql.Quorum
 
