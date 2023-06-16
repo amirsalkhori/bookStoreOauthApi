@@ -3,6 +3,8 @@ package handler
 import (
 	"bookStoreOauthApi/src/domain/accessToken"
 	"bookStoreOauthApi/src/errors"
+	"bookStoreOauthApi/src/service"
+	"fmt"
 	"net/http"
 	"strings"
 
@@ -16,10 +18,10 @@ type AccessTokenHandler interface {
 }
 
 type accessTokenHandler struct {
-	service accessToken.Service
+	service service.Service
 }
 
-func NewHandler(service accessToken.Service) *accessTokenHandler {
+func NewHandler(service service.Service) *accessTokenHandler {
 	return &accessTokenHandler{
 		service: service,
 	}
@@ -43,6 +45,7 @@ func (h *accessTokenHandler) Create(c *gin.Context) {
 		return
 	}
 
+	fmt.Println("sdfsdfs")
 	if err := h.service.Create(at); err != nil {
 		c.JSON(int(err.Status), err)
 		return

@@ -5,7 +5,10 @@ services:
     ports:
       - 9042:9042
     volumes:
-      - ./data:/var/lib/cassandra
+      - auth_db_data:/var/lib/cassandra
     environment:
       - MAX_HEAP_SIZE=2G
       - HEAP_NEWSIZE=1G
+
+volumes:
+  auth_db_data:

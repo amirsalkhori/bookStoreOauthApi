@@ -5,6 +5,7 @@ import (
 	"bookStoreOauthApi/src/http/handler"
 	"bookStoreOauthApi/src/repository/db"
 	"bookStoreOauthApi/src/repository/rest"
+	"bookStoreOauthApi/src/service"
 
 	"github.com/gin-gonic/gin"
 )
@@ -15,7 +16,7 @@ var (
 
 func StartApplication() {
 	dbRepository := db.NewRepository()
-	atService := accessToken.NewService(dbRepository)
+	atService := service.NewService(dbRepository)
 	atHandler := handler.NewHandler(atService)
 
 	userDbRepository := rest.NewUserRepository()
