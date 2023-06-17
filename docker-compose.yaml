@@ -1,14 +1,12 @@
 version: '3'
 services:
-  cassandra:
-    image: cassandra:latest
-    ports:
-      - 9042:9042
+  postgres:
+    container_name: postgres
+    restart: always
+    image: postgres:latest
+    env_file:
+      - database/database.env
     volumes:
-      - auth_db_data:/var/lib/cassandra
-    environment:
-      - MAX_HEAP_SIZE=2G
-      - HEAP_NEWSIZE=1G
-
-volumes:
-  auth_db_data:
+      - ./database:/var/lib/postgresql
+    ports:
+      - 5432:5432

@@ -4,7 +4,6 @@ import (
 	"bookStoreOauthApi/src/domain/accessToken"
 	"bookStoreOauthApi/src/errors"
 	"bookStoreOauthApi/src/service"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -45,7 +44,6 @@ func (h *accessTokenHandler) Create(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("sdfsdfs")
 	if err := h.service.Create(at); err != nil {
 		c.JSON(int(err.Status), err)
 		return

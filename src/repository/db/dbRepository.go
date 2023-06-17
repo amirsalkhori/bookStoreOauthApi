@@ -1,14 +1,23 @@
 package db
 
 import (
-	"bookStoreOauthApi/src/client/cassandra"
+	"bookStoreOauthApi/src/dataSorces/mysql/authDB"
 	"bookStoreOauthApi/src/domain/accessToken"
 	"bookStoreOauthApi/src/errors"
 	"fmt"
-	"log"
 
-	"github.com/gocql/gocql"
+	"gorm.io/gorm"
 )
+
+func connection() (*gorm.DB, *errors.RestError) {
+	db, err := authDB.Connect()
+	if err != nil {
+		fmt.Println("Error when tryin to connect to db", err)
+		return nil, errors.NewInternamlServerError(err.Error())
+	}
+
+	return db, nil
+}
 
 type dbRepository struct {
 }
@@ -19,47 +28,59 @@ type DbRepository interface {
 	UpdateExpirationTime(accessToken.AccessToken) *errors.RestError
 }
 
-func (r *dbRepository) GetById(id string) (*accessToken.AccessToken, *errors.RestError) {
-	var result accessToken.AccessToken
-	insertStmt := `SELECT * FROM access_token WHERE access_token=?`
-	if err := cassandra.GetSession().Query(insertStmt, id).Scan(
-		&result.AccessToken,
-		&result.UserId,
-		&result.ClientId,
-		&result.Expires,
-	); err != nil {
-		if err == gocql.ErrNotFound {
-			return nil, errors.NewNotFoundError("No access token found!")
-		}
+func (r *dbRepository) GetById(accessTokenId string) (*accessToken.AccessToken, *errors.RestError) {
+	db, errorConnection := connection()
+	if errorConnection != nil {
+		return nil, errorConnection
 	}
-	return &result, nil
+	var at accessToken.AccessToken
+
+	err := db.Where("access_token = ?", accessTokenId).Find(&at).Error
+	if err != nil {
+		fmt.Println("Error when tryin to get user", err)
+		return nil, errors.NewInternamlServerError(err.Error())
+	}
+
+	return &at, nil
 }
 
 func (r *dbRepository) Create(at accessToken.AccessToken) *errors.RestError {
-	insertStmt := "INSERT INTO oauth.access_token (access_token, user_id, client_id, expires) VALUES (?, ?, ?, ?)"
 
-	// Convert the expires value to time.Time
-	// at.Expires = time.Date(2023, time.May, 30, 12, 0, 0, 0, time.UTC)
+	db, errorConnection := connection()
+	if errorConnection != nil {
+		return errorConnection
+	}
+	accessTokenItem := accessToken.AccessToken{
+		AccessToken: at.AccessToken,
+		UserId:      at.UserId,
+		ClientId:    at.ClientId,
+		Expires:     at.Expires,
+	}
 
-	// Execute the INSERT statement
-	err := cassandra.GetSession().Query(insertStmt, at.AccessToken, at.UserId, at.ClientId, at.Expires).Exec()
-	if err != nil {
-		fmt.Println("error:", err.Error())
+	fmt.Println("AccessToken is:", accessTokenItem)
+
+	if err := db.Create(&accessTokenItem).Error; err != nil {
+		fmt.Println("Error:", err.Error())
 		return errors.NewInternamlServerError(err.Error())
 	}
-	log.Println("Data inserted successfully!")
+
 	return nil
 }
 
 func (r *dbRepository) UpdateExpirationTime(at accessToken.AccessToken) *errors.RestError {
 
-	updateStmt := "UPDATE oauth.access_token SET expires = ? where access_token = ?"
-	err := cassandra.GetSession().Query(updateStmt, at.Expires, at.AccessToken).Exec()
-	if err != nil {
-		fmt.Println("error:", err.Error())
-		return errors.NewInternamlServerError(err.Error())
+	db, errorConnection := connection()
+	if errorConnection != nil {
+		return errorConnection
 	}
-	log.Println("Data Updated successfully!")
+	var accessToken accessToken.AccessToken
+	err := db.Save(&accessToken).Error
+	if err != nil {
+		fmt.Println("Error when tryin to update accessToken", err)
+		return errors.NewBadRequestError("Error when tryin to update accessToken")
+
+	}
+
 	return nil
 }
 
