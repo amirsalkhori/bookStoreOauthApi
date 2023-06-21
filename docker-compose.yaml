@@ -10,3 +10,8 @@ services:
       - ./database:/var/lib/postgresql
     ports:
       - 5432:5432
+    networks:
+      - my-network
+
+networks:
+  my-network:

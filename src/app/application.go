@@ -23,9 +23,9 @@ func StartApplication() {
 	userService := accessToken.NewUserService(userDbRepository)
 	userHandler := handler.NewUserHandler(userService)
 
-	router.GET("/oath/access_token/:access_token_id", atHandler.GetById)
-	router.POST("/oath/access_token", atHandler.Create)
-	router.POST("/oath/access_token/:access_token_id", atHandler.UpdateExpirationTime)
-	router.POST("/oath/login/", userHandler.LoginUser)
+	router.GET("/oauth/access_token/:access_token_id", atHandler.GetById)
+	router.POST("/oauth/access_token", atHandler.Create)
+	router.POST("/oauth/access_token/:access_token_id", atHandler.UpdateExpirationTime)
+	router.POST("/oauth/login/", userHandler.LoginUser)
 	router.Run(":8080")
 }
