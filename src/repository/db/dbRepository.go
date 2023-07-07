@@ -40,7 +40,9 @@ func (r *dbRepository) GetById(accessTokenId string) (*accessToken.AccessToken, 
 		fmt.Println("Error when tryin to get user", err)
 		return nil, errors.NewInternamlServerError(err.Error())
 	}
-
+	if at.AccessToken == "" {
+		return nil, errors.NewNotFoundError("Access token is not valid...")
+	}
 	return &at, nil
 }
 
